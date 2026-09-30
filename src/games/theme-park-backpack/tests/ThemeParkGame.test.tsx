@@ -124,6 +124,8 @@ describe("Level 1 vertical slice", () => {
     expect(screen.queryByText("Not handled")).toBeNull();
 
     await user.click(screen.getByRole("button", { name: /see how the day went/i }));
+    // The consequence cards stay on screen through the result, so the scores
+    // never arrive without the evidence that explains them.
 
     // Three independent dimensions, no overall score (spec 13).
     expect(screen.getByText("Day readiness")).toBeTruthy();
@@ -165,13 +167,12 @@ describe("Level 1 vertical slice", () => {
     await user.click(itemButton(/park map/i));
     await user.click(screen.getByRole("button", { name: /start the day/i }));
     await user.click(screen.getByRole("button", { name: /see how the day went/i }));
-    await user.click(screen.getByRole("button", { name: /finish/i }));
+    // Level 1 has no aiReveal, so advancing goes to Level 2.
+    await user.click(screen.getByRole("button", { name: /next level/i }));
 
-    // Level 1 is the only implemented level, so finishing lands on the end
-    // state with a cleared pack rather than a second level.
-    expect(screen.getByRole("heading", { name: /that is the whole game/i })).toBeTruthy();
-    expect(screen.getByText("0 / 100")).toBeTruthy();
-    expect(screen.getByRole("button", { name: /replay level 1/i })).toBeTruthy();
+    expect(screen.getByRole("heading", { name: /smaller bag/i })).toBeTruthy();
+    expect(screen.getByText("0 / 70")).toBeTruthy();
+    expect(screen.getByText("Level 2 of 5")).toBeTruthy();
   });
 
   it("resets a half-packed level back to empty", async () => {
@@ -197,7 +198,7 @@ describe("Level 1 vertical slice", () => {
     await user.click(itemButton(/park map/i));
     await user.click(screen.getByRole("button", { name: /start the day/i }));
     await user.click(screen.getByRole("button", { name: /see how the day went/i }));
-    await user.click(screen.getByRole("button", { name: /finish/i }));
+    await user.click(screen.getByRole("button", { name: /next level/i }));
 
     first.unmount();
 

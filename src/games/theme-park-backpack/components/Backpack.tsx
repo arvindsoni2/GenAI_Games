@@ -7,9 +7,11 @@ import type { GameItem } from "../game.types";
 export function Backpack({
   selectedItems,
   onRemove,
+  disabled = false,
 }: {
   selectedItems: GameItem[];
   onRemove: (itemId: string) => void;
+  disabled?: boolean;
 }) {
   if (selectedItems.length === 0) {
     return (
@@ -27,16 +29,23 @@ export function Backpack({
             type="button"
             className="backpack__row"
             onClick={() => onRemove(item.id)}
-            aria-label={`Remove ${item.name} from backpack, size ${item.size}`}
+            disabled={disabled}
+            aria-label={
+              disabled
+                ? `${item.name}, size ${item.size}`
+                : `Remove ${item.name} from backpack, size ${item.size}`
+            }
           >
             <span className="backpack__icon" aria-hidden="true">
               {item.icon}
             </span>
             <span className="backpack__name">{item.name}</span>
             <span className="backpack__size">{item.size}</span>
-            <span className="backpack__remove" aria-hidden="true">
-              Remove
-            </span>
+            {disabled ? null : (
+              <span className="backpack__remove" aria-hidden="true">
+                Remove
+              </span>
+            )}
           </button>
         </li>
       ))}

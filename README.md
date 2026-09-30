@@ -12,7 +12,7 @@ bundle that runs from any free static host.
 
 | Game | Concept it teaches | Status |
 |---|---|---|
-| [Theme Park Backpack](#theme-park-backpack) | Context windows and context engineering | Level 1 of 5 playable |
+| [Theme Park Backpack](#theme-park-backpack) | Context windows and context engineering | Playable, all 5 levels |
 
 ---
 
@@ -57,8 +57,9 @@ Then open <http://localhost:5173/games/theme-park-backpack>.
 | 4 | Compression | Summarisation and information density |
 | 5 | Changing Context | Relevance is task-dependent |
 
-Only Level 1 is implemented. Levels 2–5 are specified but intentionally not
-built until the Level 1 slice validated the component and state boundaries.
+All five levels are implemented. Level 5 is the only two-phase level: the plan
+changes halfway through, so the player repacks and the morning and evening
+results are reported separately rather than merged.
 
 ### Scoring
 
@@ -85,6 +86,7 @@ than a full backpack of noise.
 | TypeScript 6 | Types, strict |
 | Vite 8 | Build + dev server |
 | Vitest 5 | Unit tests (node) and component tests (jsdom) |
+| Playwright 1.63 | E2E smoke tests, desktop + mobile |
 | oxlint | Linting |
 
 Node 22+, pnpm 11. No game engine, no animation library, no state-management
@@ -98,15 +100,34 @@ pnpm install       # install dependencies
 pnpm dev           # dev server
 pnpm build         # typecheck + production build to dist/
 pnpm preview       # serve the production build locally
-pnpm test          # run all tests
+pnpm test          # unit + component tests
 pnpm test:watch    # watch mode
+pnpm test:e2e      # Playwright smoke tests (builds and previews automatically)
+pnpm test:e2e:ui   # Playwright in watch/UI mode
 pnpm typecheck     # tsc -b
 pnpm lint          # oxlint
 ```
 
-`dist/` is a plain static bundle — deploy it to Cloudflare Pages, Netlify,
-GitHub Pages, or any static host. No secrets or environment variables are
+`dist/` is a plain static bundle — no secrets or environment variables
 required.
+
+## Deploying
+
+**Cloudflare Pages**
+
+```bash
+pnpm build
+npx wrangler pages deploy dist
+```
+
+`wrangler.toml` is already set up. For a Git-connected project, set the build
+command to `pnpm build` and the output directory to `dist`.
+
+**Netlify / any static host**
+
+`public/_redirects` contains the SPA fallback rule. A deep link such as
+`/games/theme-park-backpack` must serve `index.html`, or a hard refresh 404s.
+There is a test that fails if this file is missing or wrong.
 
 ---
 
@@ -135,7 +156,25 @@ src/
 └── styles/
     ├── globals.css             tokens, reset, a11y base
     └── components.css          component styles
+
+e2e/                            Playwright smoke tests
 ```
+
+### Why scoring lives outside the components
+
+`scoring.ts` imports no React and touches no DOM, so every rule in the
+specification is testable without rendering anything:
+
+```ts
+calculatePhaseResult({ items, selectedItemIds, events, capacity, phaseId })
+```
+
+`phaseId` is what makes Level 5 work. `getItemUsefulness(item, "evening")` reads
+that item's evening override, so the sunglasses you correctly packed for a
+sunny morning count as noise once the rain arrives. The morning and evening
+packs are scored with two separate calls and both selections are kept, so the
+before/after comparison on the result screen is truthful rather than
+recomputed.
 
 ### Architecture constraint
 
@@ -170,14 +209,28 @@ Built in, not bolted on:
 ## Testing
 
 ```bash
-pnpm test
+pnpm test       # 57 unit + component tests
+pnpm test:e2e   # 24 Playwright tests, desktop + mobile
 ```
 
-- **Unit** — scoring and capacity rules in node: capacity rejection, event
-  success, both score formulas, feedback classification, phase-aware usefulness.
-- **Component** — Level 1 under jsdom: select/deselect, rejection messaging,
-  empty-state disabling, day playback, result rendering, persistence, and
-  `localStorage` failure.
+**Unit** (`*.test.ts`, node) — capacity rejection, event success, both score
+formulas, feedback classification, phase-aware usefulness, and level-data
+integrity checks such as "every event references a real item".
+
+**Component** (`*.test.tsx`, jsdom) — Level 1 basics, the Level 3 and Level 4
+reveals, the full Level 5 change-and-repack flow, persistence, and
+`localStorage` failure.
+
+**End-to-end** (`e2e/`, Playwright) — the whole game from intro to final reveal,
+capacity rejection, "full is not optimal", progress across a reload, keyboard
+operation, 320px overflow, and static-host deep links. Runs on a desktop and a
+mobile viewport.
+
+First run needs browsers:
+
+```bash
+pnpm exec playwright install chromium
+```
 
 ---
 
@@ -192,4 +245,4 @@ pnpm test
 
 ## License
 
-To be decided.
+MIT — see [LICENSE](LICENSE).

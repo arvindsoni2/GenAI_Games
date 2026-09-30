@@ -78,6 +78,13 @@
   font-size: 0.9rem;
 }
 
+.intro__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+}
+
 /* ---------- progress ---------- */
 
 .progress {
@@ -578,6 +585,75 @@
 .result__lesson {
   color: var(--park-text-muted);
   font-style: italic;
+}
+
+.result__hint {
+  color: var(--park-text-muted);
+  border-left: 3px solid var(--park-border-strong);
+  padding-left: var(--space-3);
+}
+
+.result__arrow {
+  text-align: center;
+  font-size: 1.5rem;
+  color: var(--park-text-muted);
+  margin: var(--space-4) 0;
+}
+
+/* ---------- Level 5 plan change ---------- */
+
+.plan-change {
+  margin-top: var(--space-5);
+  background: var(--park-surface);
+  border: 1px solid var(--park-warning);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+}
+
+.plan-change__badge {
+  display: inline-block;
+  margin: 0 0 var(--space-3);
+  padding: 3px var(--space-3);
+  border-radius: 999px;
+  background: var(--park-warning);
+  color: #1a1205;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.plan-change__message {
+  font-size: 1.02rem;
+  margin-bottom: var(--space-2);
+}
+
+.plan-change__hint {
+  color: var(--park-text-muted);
+  font-size: 0.9rem;
+}
+
+.plan-change__was {
+  margin-top: var(--space-4);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--park-border);
+}
+
+.pack-summary {
+  list-style: none;
+  margin: 0 0 var(--space-4);
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.pack-summary li {
+  font-size: 0.85rem;
+  border: 1px solid var(--park-border);
+  border-radius: 999px;
+  padding: 3px var(--space-3);
+  background: var(--park-surface-raised);
 }
 
 /* ---------- reveal + modal ---------- */

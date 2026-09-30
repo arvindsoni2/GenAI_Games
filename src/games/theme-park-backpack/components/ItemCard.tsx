@@ -4,6 +4,8 @@ type ItemCardProps = {
   item: GameItem;
   selected: boolean;
   onToggle: (itemId: string) => void;
+  /** Read-only state, e.g. the frozen morning pack in Level 5. */
+  disabled?: boolean;
 };
 
 /**
@@ -13,12 +15,13 @@ type ItemCardProps = {
  * item fits, only whether it is currently in the pack. Rejection messaging is
  * the parent's job, so this stays a pure `<button>` with `aria-pressed`.
  */
-export function ItemCard({ item, selected, onToggle }: ItemCardProps) {
+export function ItemCard({ item, selected, onToggle, disabled = false }: ItemCardProps) {
   return (
     <button
       type="button"
       className={`item${selected ? " item--selected" : ""}`}
       aria-pressed={selected}
+      disabled={disabled}
       onClick={() => onToggle(item.id)}
     >
       <span className="item__icon" aria-hidden="true">

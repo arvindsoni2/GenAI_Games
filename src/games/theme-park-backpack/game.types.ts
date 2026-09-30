@@ -67,6 +67,12 @@ export type Level = {
 
   lesson: string;
 
+  /**
+   * A short, optional nudge shown under the lesson. Used by Level 2 to point
+   * at machine constraints without naming any AI term yet.
+   */
+  hint?: string;
+
   aiReveal?: AIReveal;
 };
 

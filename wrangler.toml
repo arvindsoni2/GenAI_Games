@@ -1,0 +1,7 @@
+name = "genai-games"
+compatibility_date = "2026-09-30"
+pages_build_output_dir = "dist"
+
+# Single-page app: every path falls back to index.html so a deep link like
+# /games/theme-park-backpack survives a hard refresh. Cloudflare Pages serves
+# the matching static asset when one exists and falls through to this otherwise.
