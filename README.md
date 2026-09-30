@@ -87,6 +87,7 @@ than a full backpack of noise.
 | Vite 8 | Build + dev server |
 | Vitest 5 | Unit tests (node) and component tests (jsdom) |
 | Playwright 1.63 | E2E smoke tests, desktop + mobile |
+| Wrangler 4 | Cloudflare Pages deploys |
 | oxlint | Linting |
 
 Node 22+, pnpm 11. No game engine, no animation library, no state-management
@@ -96,7 +97,7 @@ actually needs it.
 ## Scripts
 
 ```bash
-pnpm install       # install dependencies
+pnpm install       # install dependencies (Node >=22, pnpm 11.22.0)
 pnpm dev           # dev server
 pnpm build         # typecheck + production build to dist/
 pnpm preview       # serve the production build locally
@@ -113,21 +114,40 @@ required.
 
 ## Deploying
 
-**Cloudflare Pages**
+Deployed on **Cloudflare Pages** via GitHub Actions. `main` builds, verifies, and
+publishes; pull requests run the same checks without deploying.
+
+```
+.github/workflows/ci.yml       lint · typecheck · 57 unit/component tests · 24 E2E tests
+.github/workflows/deploy.yml   the same checks, then wrangler pages deploy
+wrangler.toml                  Pages project config (name: genai-games)
+```
+
+### One-time setup
+
+Add two repository secrets under **Settings → Secrets and variables → Actions**:
+
+| Secret | Where to get it |
+|---|---|
+| `CLOUDFLARE_ACCOUNT_ID` | Dashboard → zone overview → **API** section |
+| `CLOUDFLARE_API_TOKEN` | Dashboard → **Account API tokens** → Create Token → **Account / Cloudflare Pages / Edit** |
+
+The token needs Pages edit only — never use a Global API Key. The first push to
+`main` after adding them deploys; you can also trigger it manually from the
+Actions tab.
+
+### Deploying by hand
 
 ```bash
 pnpm build
-npx wrangler pages deploy dist
+pnpm exec wrangler pages deploy dist --project-name=genai-games
 ```
 
-`wrangler.toml` is already set up. For a Git-connected project, set the build
-command to `pnpm build` and the output directory to `dist`.
+**Netlify or another static host**
 
-**Netlify / any static host**
-
-`public/_redirects` contains the SPA fallback rule. A deep link such as
-`/games/theme-park-backpack` must serve `index.html`, or a hard refresh 404s.
-There is a test that fails if this file is missing or wrong.
+`public/_redirects` carries the SPA fallback rule, and an E2E test fails if it
+is missing or wrong. A deep link such as `/games/theme-park-backpack` must serve
+`index.html`, or a hard refresh 404s.
 
 ---
 

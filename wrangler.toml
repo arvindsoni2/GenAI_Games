@@ -1,7 +1,19 @@
+# Cloudflare Pages project configuration.
+#
+# Deploy target: genai-games
+#
+# Required repository secrets for the deploy workflow:
+#   CLOUDFLARE_API_TOKEN  — Account / Cloudflare Pages / Edit
+#   CLOUDFLARE_ACCOUNT_ID — from the dashboard, Zone Overview -> API section
+#
+# The token needs Pages edit only. Do not use a Global API Key.
+
 name = "genai-games"
 compatibility_date = "2026-09-30"
 pages_build_output_dir = "dist"
 
-# Single-page app: every path falls back to index.html so a deep link like
-# /games/theme-park-backpack survives a hard refresh. Cloudflare Pages serves
-# the matching static asset when one exists and falls through to this otherwise.
+# Single-page app: every unknown path falls back to index.html so a deep link
+# like /games/theme-park-backpack survives a hard refresh. Cloudflare Pages
+# serves the matching static asset when one exists and falls through to this
+# otherwise. The equivalent for other hosts lives in public/_redirects, and a
+# test fails if either file is removed.

@@ -1,0 +1,13 @@
+# Workspace definition.
+#
+# This project is a single package; the file exists so pnpm 11 can record which
+# dependency build scripts are allowed to run.
+#
+# `esbuild` ships a platform binary that must be unpacked at install time, or
+# Vite cannot start. `workerd` is Wrangler's local runtime, needed by
+# `wrangler dev` and by the deploy workflow. Both are trusted, pinned
+# dependencies, so their build scripts are allowed here rather than being
+# silently skipped (which makes pnpm exit non-zero).
+allowBuilds:
+  esbuild: true
+  workerd: true
